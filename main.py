@@ -51,7 +51,7 @@ if not gemini_api_key:
 genai.configure(api_key=gemini_api_key)
 gemini_model = genai.GenerativeModel('gemini-pro')
 
-# Initialize Database
+# Database config (but DON'T connect yet)
 db_config = {
     'host': os.getenv("DB_HOST", "localhost"),
     'user': os.getenv("DB_USER", "postgres"),
@@ -60,16 +60,34 @@ db_config = {
     'port': int(os.getenv("DB_PORT", "5432"))
 }
 
-try:
-    db = Database(**db_config)
-    logger.info("Database connected successfully")
-except Exception as e:
-    logger.error(f"Failed to connect to database: {str(e)}")
-    logger.info("NOTE: Make sure AlloyDB is running and credentials are correct")
-    db = None
+# Global variables for lazy initialization
+db = None
+orchestrator = None
+db_connection_attempted = False
+db_connection_failed = False
 
-# Initialize Orchestrator
-orchestrator = Orchestrator(db, gemini_model) if db else None
+def get_db():
+    """Lazy database connection - only connect when first needed"""
+    global db, orchestrator, db_connection_attempted, db_connection_failed
+    
+    if db_connection_attempted:
+        # Already tried to connect (success or failure)
+        return db
+    
+    # Mark that we've attempted connection
+    db_connection_attempted = True
+    
+    try:
+        logger.info("Attempting database connection...")
+        db = Database(**db_config)
+        orchestrator = Orchestrator(db, gemini_model)
+        logger.info("Database connected successfully")
+        return db
+    except Exception as e:
+        logger.error(f"Failed to connect to database: {str(e)}")
+        logger.info("NOTE: Make sure AlloyDB is running and credentials are correct")
+        db_connection_failed = True
+        return None
 
 # ============================================================================
 # Request/Response Models
@@ -111,14 +129,13 @@ class HealthCheckResponse(BaseModel):
     database_connected: bool
     gemini_available: bool
 
-
 # ============================================================================
 # API Endpoints
 # ============================================================================
 
 @app.get("/health", response_model=HealthCheckResponse)
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint - doesn't require database"""
     return {
         "status": "healthy",
         "database_connected": db is not None,
@@ -133,6 +150,13 @@ async def submit_symptoms(report: SymptomReport, background_tasks: BackgroundTas
     User reports symptoms, system assesses severity and returns guidance
     """
     
+    # Connect to database on first use
+    database = get_db()
+    if not database:
+        raise HTTPException(status_code=500, detail="Database connection failed")
+    
+    # Get orchestrator (created in get_db)
+    global orchestrator
     if not orchestrator:
         raise HTTPException(status_code=500, detail="System not properly initialized")
 
@@ -169,18 +193,20 @@ async def submit_symptoms(report: SymptomReport, background_tasks: BackgroundTas
 async def get_user_profile(user_id: str):
     """Get user's medical profile"""
     
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not connected")
+    # Connect to database on first use
+    database = get_db()
+    if not database:
+        raise HTTPException(status_code=500, detail="Database connection failed")
 
     try:
-        user = db.get_user(user_id)
+        user = database.get_user(user_id)
         if not user:
             raise HTTPException(status_code=404, detail=f"User {user_id} not found")
 
-        conditions = db.get_medical_conditions(user_id)
-        medications = db.get_medications(user_id)
-        allergies = db.get_allergies(user_id)
-        contacts = db.get_emergency_contacts(user_id)
+        conditions = database.get_medical_conditions(user_id)
+        medications = database.get_medications(user_id)
+        allergies = database.get_allergies(user_id)
+        contacts = database.get_emergency_contacts(user_id)
 
         return {
             'user_id': user_id,
@@ -225,11 +251,13 @@ async def notify_emergency_contacts(user_id: str, background_tasks: BackgroundTa
     Later: integrate with Twilio for real SMS/calls
     """
     
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not connected")
+    # Connect to database on first use
+    database = get_db()
+    if not database:
+        raise HTTPException(status_code=500, detail="Database connection failed")
 
     try:
-        contacts = db.get_emergency_contacts(user_id)
+        contacts = database.get_emergency_contacts(user_id)
         
         if not contacts:
             return {
@@ -264,8 +292,10 @@ async def notify_emergency_contacts(user_id: str, background_tasks: BackgroundTa
 async def get_assessment_history(user_id: str, limit: int = 10):
     """Get recent assessments for a user"""
     
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not connected")
+    # Connect to database on first use
+    database = get_db()
+    if not database:
+        raise HTTPException(status_code=500, detail="Database connection failed")
 
     try:
         # Note: Would need to implement this method in database.py
