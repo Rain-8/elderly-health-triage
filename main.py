@@ -49,7 +49,7 @@ if not gemini_api_key:
     raise ValueError("GEMINI_API_KEY not set in .env")
 
 genai.configure(api_key=gemini_api_key)
-gemini_model = genai.GenerativeModel('gemini-pro')
+gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 
 # Database config (but DON'T connect yet)
 db_config = {
