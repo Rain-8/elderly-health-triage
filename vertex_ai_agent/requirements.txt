@@ -1,4 +1,0 @@
-google-adk==1.14.0
-langchain-community==0.3.27
-google-cloud-aiplatform==1.142.0
-requests==2.32.5
