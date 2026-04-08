@@ -79,15 +79,16 @@ class Orchestrator:
                 'symptoms_reported': symptom_input,
                 'severity_level': assessment_result['severity_level'],
                 'reasoning': assessment_result['reasoning'],
-                'recommendations': recommendation_result['guidance'],
-                'actions': recommendation_result['actions'],
-                'emergency_options': recommendation_result.get('emergency_options', None),
-                'next_steps': recommendation_result['next_steps'],
+                'recommendations': {
+                    'guidance': recommendation_result['guidance'],
+                    'actions': recommendation_result['actions'],
+                    'next_steps': recommendation_result['next_steps'],
+                    'emergency_options': recommendation_result.get('emergency_options')
+                },
                 'intake_data': intake_result,
                 'history_data': history_result,
                 'assessment_data': assessment_result
             }
-
             # Save to database
             logger.info("[Orchestrator] Saving assessment to database")
             self.db.save_assessment(user_id, {
