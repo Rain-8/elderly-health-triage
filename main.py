@@ -309,6 +309,17 @@ async def get_assessment_history(user_id: str, limit: int = 10):
     except Exception as e:
         logger.error(f"Failed to get assessments: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/api/test-sms/{user_id}")
+async def test_sms(user_id: str):
+    """Test SMS sending"""
+    from twilio_mcp_server import send_emergency_sms
+    
+    result = send_emergency_sms(
+        user_id=user_id,
+        message="[TEST] This is a test SMS from elderly health triage system"
+    )
+    return result
 
 
 # ============================================================================
