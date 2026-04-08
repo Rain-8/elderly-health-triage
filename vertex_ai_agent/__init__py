@@ -1,0 +1,11 @@
+"""
+Vertex AI Agent - Elderly Health Triage
+Google ADK Implementation
+"""
+
+__version__ = "1.0.0"
+__author__ = "Elderly Health Triage Team"
+
+from .agent import ElderlyHealthTriageAgent, run_agent
+
+__all__ = ["ElderlyHealthTriageAgent", "run_agent"]
