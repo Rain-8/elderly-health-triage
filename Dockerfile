@@ -2,6 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install curl first
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Download AlloyDB Auth Proxy
 RUN curl -o /app/alloydb-auth-proxy https://dl.google.com/cloudsql/alloydb-auth-proxy.linux.x86_64 && \
     chmod +x /app/alloydb-auth-proxy
