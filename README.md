@@ -33,6 +33,8 @@ A production-ready **multi-agent AI system** for real-time health triage:
 
 ---
 
+
+
 ##  System Architecture
 
 ```
@@ -82,6 +84,9 @@ INFRASTRUCTURE: Docker, GitHub, Cloud Build
 ```
 
 ---
+
+![Multi-Agent System Architecture](prototype_images/agents.png)
+
 
 ##  Technology Stack
 
@@ -155,6 +160,9 @@ PostgreSQL Database (elderly_care)
 
 ---
 
+
+![AlloyDB Database Setup](prototype_images/alloy_db.png)
+
 ##  How It Works
 
 ### **User Flow**
@@ -216,7 +224,14 @@ PostgreSQL Database (elderly_care)
 
 ---
 
+
 ## 🚀 Deployment
+
+![Cloud Shell Deployment](prototype_images/cli.png)
+
+![ADK Web Interface](prototype_images/adk_web_cli.png)
+
+
 
 ### **Live Services** (Development/Testing)
 
