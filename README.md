@@ -441,7 +441,7 @@ cp .env.example .env
 # Edit .env with your credentials:
 # DB_HOST=10.116.112.2
 # DB_USER=postgres
-# DB_PASSWORD=SecurePass123!
+# DB_PASSWORD=your_password
 # DB_NAME=elderly_care
 # GEMINI_API_KEY=your-key-here
 ```
@@ -479,7 +479,7 @@ gcloud run deploy elderly-health-triage \
   --set-env-vars \
     DB_HOST=10.116.112.2,\
     DB_USER=postgres,\
-    DB_PASSWORD='SecurePass123!',\
+    DB_PASSWORD='your_password',\
     DB_NAME=elderly_care,\
     GEMINI_API_KEY=your-key
 ```
