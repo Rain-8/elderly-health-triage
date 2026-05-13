@@ -46,7 +46,7 @@ A production-ready **multi-agent AI system** for real-time health triage:
                      ↓
 ┌─────────────────────────────────────────────────────────────┐
 │                   API LAYER (Cloud Run)                     │
-│  FastAPI Backend: /api/triage, /api/user, /api/emergency   │
+│  FastAPI Backend: /api/triage, /api/user, /api/emergency    │
 └────────────────────┬────────────────────────────────────────┘
                      │
         ┌────────────┴────────────┐
@@ -243,7 +243,7 @@ PostgreSQL Database (elderly_care)
 | **Database Setup** | ✅ Configured | AlloyDB with test user (user_001) |
 | **Cloud Run** | 🚧 Ready to Deploy | Command prepared, awaiting deployment trigger |
 
-**Current Status**: Code complete and ready for production deployment. Screenshots and test results available from development/testing phase.
+**Current Status**: Code complete and ready for deployment. Screenshots and test results available from development/testing phase.
 
 ### **API Endpoints** (Ready to Deploy)
 
@@ -353,9 +353,6 @@ Response: "CALL AMBULANCE NOW! SMS sent to emergency contacts"
 
 - ✅ **Private IP Database**: AlloyDB connected via VPC (no public internet exposure)
 - ✅ **SSL Encryption**: All database connections encrypted
-- ✅ **Environment Variables**: Sensitive credentials stored securely (not in code)
-- ✅ **VPC Isolation**: API and database in same private network
-- ✅ **GitHub Security**: `.env` file never committed (in `.gitignore`)
 - ✅ **Cloud Run**: Serverless, auto-scaling, authenticated by default
 - ✅ **Audit Logging**: All assessments logged to database with timestamps
 
